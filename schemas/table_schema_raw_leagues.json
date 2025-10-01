@@ -1,0 +1,23 @@
+{
+    "fields": [
+        {"raw_name": "", "column_name": "league_id", "type": "string"},
+        {"raw_name": "year", "column_name": "year", "type": "integer"},
+        {"raw_name": "split", "column_name": "split", "type": "string"},
+        {"raw_name": "league", "column_name": "league", "type": "string"},
+        {"raw_name": "patch", "column_name": "patch", "type": "string"},
+        {"raw_name": "", "column_name": "_file_name", "type": "string"},
+        {"raw_name": "", "column_name": "_inserted_at", "type": "datetime"},
+        {"raw_name": "", "column_name": "_updated_at", "type": "datetime"}
+    ],
+    "metadata":{
+        "table_name": "raw_league",
+        "description": "Tabela raw responsável por conter as informações do campeonato",
+        "partition_by": "year",
+        "group_by": ["year",  "split", "patch"],
+        "labels":{
+            "layer": "raw",
+            "content": "league_content",
+            "team": "Data_engineer"
+        }
+    }
+}

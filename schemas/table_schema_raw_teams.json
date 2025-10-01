@@ -1,0 +1,32 @@
+{
+    "fields": [
+        {"raw_name": "teamid", "column_name": "game_id", "type": "string"},
+        {"raw_name": "teamname", "column_name": "game_id", "type": "string"},
+        {"raw_name": "position", "column_name": "game_id", "type": "string"},
+        {"raw_name": "playername", "column_name": "game_id", "type": "string"},
+        {"raw_name": "playerid", "column_name": "game_id", "type": "string"},
+        {"raw_name": "league", "column_name": "game_id", "type": "string"},
+        {"raw_name": "year", "column_name": "game_id", "type": "integer"},
+        {"raw_name": "split", "column_name": "game_id", "type": "string"},
+        {"raw_name": "", "column_name": "_file_name", "type": "string"},
+        {"raw_name": "", "column_name": "_inserted_at", "type": "datetime"},
+        {"raw_name": "", "column_name": "_updated_at", "type": "datetime"}
+    ],
+    "metadata":{
+        "table_name": "raw_team",
+        "description": "Tabela raw responsável por conter as informações mais relevantes de uma time",
+        "partition_by": "league",
+        "group_by": ["teamid",  "teamname", "league"],
+        "labels":{
+                "layer": "raw",
+                "content": "team_content",
+                "team": "Data_engineer"
+        }
+    }
+}
+
+
+
+
+
+

@@ -1,0 +1,60 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+*.env
+.env.*
+
+# Airflow
+airflow.db
+airflow-webserver.pid
+logs/
+dags/__pycache__/
+dags/*.pyc
+airflow.cfg
+unittests.cfg
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Spark logs and temporary files
+.metastore_db/
+spark-warehouse/
+derby.log
+
+# Python virtualenv
+venv/
+env/
+.venv/
+
+# Data folders
+data/raw/
+data/processed/
+
+# Lakehouse - optional if stored locally
+lakehouse/
+
+# Docker volumes and local mounts
+docker/data/
+docker/logs/
+docker/minio/
+docker/spark/
+docker/airflow/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+*.bak
+*.swp

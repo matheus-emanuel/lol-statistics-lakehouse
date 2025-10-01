@@ -1,0 +1,37 @@
+services:
+  polaris:
+    image: apache/polaris:latest
+    container_name: polaris
+    environment:
+      POLARIS_STORAGE_TYPE: s3
+      POLARIS_STORAGE_BUCKET: s3://iceberg-catalog
+      POLARIS_STORAGE_ENDPOINT: http://minio:9000
+      POLARIS_STORAGE_ACCESS_KEY_ID: qOFclq6eGlFnjm18lIEc
+      POLARIS_STORAGE_SECRET_ACCESS_KEY: T3Wd9h3CjUe9pcRF0DakmrjTBDWYUmDGA9Wue5X0
+      POLARIS_STORAGE_REGION: us-east-1
+      POLARIS_REST_PORT: 8181
+    ports:
+      - "8181:8181"
+    networks:
+      - lol-statistics-lakehouse
+  
+  trino:
+    image: trinodb/trino:435
+    container_name: trino
+    depends_on:
+      - polaris
+    environment:
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY: qOFclq6eGlFnjm18lIEc
+      AWS_SECRET_KEY: T3Wd9h3CjUe9pcRF0DakmrjTBDWYUmDGA9Wue5X0
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./etc/trino/catalog:/etc/trino/catalog
+    networks:
+      - lol-statistics-lakehouse
+
+networks:
+  lol-statistics-lakehouse:
+    name: lol-statistics-lakehouse  # Isso garante que a rede se chame exatamente assim
+    driver: bridge

@@ -1,0 +1,78 @@
+services:
+  pg-catalog:
+    image: postgres:15-alpine
+    container_name: iceberg_catalog
+    environment:
+      - POSTGRES_USER=iceberg
+      - POSTGRES_PASSWORD=iceberg
+      - POSTGRES_DB=iceberg_db
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "iceberg" ]
+      interval: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - lol-statistics-lakehouse
+  
+  rest-catalog:
+    image: tabulario/iceberg-rest:latest
+    container_name: iceberg_rest
+    depends_on:
+      pg-catalog:
+        condition: service_healthy
+    environment:
+      # Config REST Catalog
+      CATALOG_URI: jdbc:postgresql://pg-catalog:5432/iceberg_db
+      CATALOG_USER: iceberg
+      CATALOG_PASSWORD: iceberg
+      CATALOG_WAREHOUSE: s3://iceberg-catalog
+      CATALOG_JDBC_USER: iceberg
+      CATALOG_JDBC_PASSWORD: iceberg
+      AWS_REGION: us-east-1
+      S3_PATH_STYLE_ACCESS: "true"
+      S3_ENDPOINT: http://minio:9000
+      AWS_ACCESS_KEY_ID: qOFclq6eGlFnjm18lIEc
+      AWS_SECRET_ACCESS_KEY: T3Wd9h3CjUe9pcRF0DakmrjTBDWYUmDGA9Wue5X0
+
+      # Forçar uso do S3FileIO
+      CATALOG_IO__IMPL: org.apache.iceberg.aws.s3.S3FileIO
+
+      # Credenciais MinIO
+      CATALOG_S3_ENDPOINT: http://minio:9000
+      CATALOG_S3_ACCESS_KEY_ID: qOFclq6eGlFnjm18lIEc
+      CATALOG_S3_SECRET_ACCESS_KEY: T3Wd9h3CjUe9pcRF0DakmrjTBDWYUmDGA9Wue5X0
+      CATALOG_S3_REGION: us-east-1
+      CATALOG_S3_PATH_STYLE_ACCESS: "true"
+    ports:
+      - "8181:8181"
+    volumes:
+      - warehouse:/warehouse
+    networks:
+      - lol-statistics-lakehouse
+  
+  trino:
+    image: trinodb/trino:435
+    container_name: trino
+    depends_on:
+      - rest-catalog
+    environment:
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY: qOFclq6eGlFnjm18lIEc
+      AWS_SECRET_KEY: T3Wd9h3CjUe9pcRF0DakmrjTBDWYUmDGA9Wue5X0
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./etc/trino/catalog:/etc/trino/catalog
+    networks:
+      - lol-statistics-lakehouse
+
+volumes:
+  pgdata:
+  warehouse:
+
+networks:
+  lol-statistics-lakehouse:
+    name: lol-statistics-lakehouse  # Isso garante que a rede se chame exatamente assim
