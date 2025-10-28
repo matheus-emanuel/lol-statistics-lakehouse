@@ -1,4 +1,6 @@
 import json
+import psycopg
+import os
 
 def aux_type_map(list_type: list) -> list:
     field_type_pg = []
@@ -34,6 +36,11 @@ def get_schema_file(file_path: str) -> dict:
     Returns:
         Retorna um dicionário simplificado contendo as seguintes informações:
     """
+
+    # VALIDA DE UM ARQUIVO ESTÁ VAZIO
+    if os.path.getsize(file_path) == 0:
+        raise ValueError(f"O arquivo '{file_path}' está vazio.")
+        
     with open(file_path, 'r', encoding='utf-8') as arquivo:
         data = json.load(arquivo)
     
@@ -42,8 +49,6 @@ def get_schema_file(file_path: str) -> dict:
 
     column_name = [f['column_name'] for f in fields]
     field_type = [f['type'] for f in fields]
-
-    
 
     return {
         "table_name": metadata.get('table_name'),
@@ -72,23 +77,31 @@ def mount_query(dict_schema: dict) -> str:
     )
     
     sql_query = f"""
-    CREATE TABLE schema.{dict_schema.get('table_name')} (
+    CREATE TABLE lol_statistics.{dict_schema.get('table_name')} (
     {columns}
     );
-    CREATE INDEX idx_{dict_schema.get('table_name')}_{dict_schema.get('partition_by')} ON {dict_schema.get('table_name')} ({dict_schema.get('partition_by')});
-    COMMENT ON TABLE {dict_schema.get('table_name')} IS '{dict_schema.get('description')}';
+    CREATE INDEX idx_{dict_schema.get('table_name')}_{dict_schema.get('partition_by')} ON lol_statistics.{dict_schema.get('table_name')} ({dict_schema.get('partition_by')});
+    COMMENT ON TABLE lol_statistics.{dict_schema.get('table_name')} IS '{dict_schema.get('description')}';
         """
-    print(sql_query)
+    return sql_query
 
-def database_conn():
-    pass
-
-def create_table():
-    pass
+def create_table(query: str) -> None:
+    """
+    Descrição:
+        Função responsável por criar a tabela dentro do banco
+    """
+    with psycopg.connect("dbname=lol_data_DW user=postgresql password=postgresql host=localhost port=5432") as conn:
+        with conn.cursor() as cur:
+            cur.execute(query)
 
 if __name__ == '__main__':
-    file_path = '../schemas/table_schema_raw_leagues.json' 
+    file_path = '../schemas/'
+    file_name = os.listdir(file_path)
 
-    dict_schema = get_schema_file(file_path)
-    mount_query(dict_schema)
-    # print(dict_schema)
+    for file in file_name:
+        full_name = f'{file_path}{file}'
+
+    # dict_schema = get_schema_file(file_path)
+    # sql_query = mount_query(dict_schema)
+    # print(sql_query)
+    # create_table(sql_query)
