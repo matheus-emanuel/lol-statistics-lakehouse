@@ -6,7 +6,7 @@ def aux_type_map(list_type: list) -> list:
     field_type_pg = []
     TYPE_MAP = {
     "string": "TEXT",
-    "integer": "INTEGER",
+    "integer": "NUMERIC",
     "float": "NUMERIC",
     "double": "NUMERIC",
     "numeric": "NUMERIC",
